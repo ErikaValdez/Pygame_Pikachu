@@ -5,6 +5,7 @@ HEIGHT = 600
 BLACK = (0, 0, 0)
 WHITE = ( 255, 255, 255)
 GREEN = (0, 255, 0)
+RED =(255,0,0)
 
 pygame.init()
 pygame.mixer.init()
@@ -16,17 +17,17 @@ clock = pygame.time.Clock()
 
 def draw_text(surface, text, size, x, y):
 	font = pygame.font.SysFont("serif", size)
-	text_surface = font.render(text, True, BLACK)
+	text_surface = font.render(text, True, RED)
 	text_rect = text_surface.get_rect()
 	text_rect.midtop = (round(x), round(y))
 	surface.blit(text_surface, text_rect)
 
-def draw_shield_bar(surface,x,y, percentage):
+def draw_shield_bar(surface, x,y, percentage):
 	BAR_LENGHT = 100
 	BAR_HEIGHT = 10
 	fill = (percentage / 100) * BAR_LENGHT
 	border = pygame.Rect(x, y, BAR_LENGHT, BAR_HEIGHT)
-	fill = pygame.Rect(x, y, fill, BAR_HEIGHT)
+	fill = pygame.Rect(x,y, fill, BAR_HEIGHT)
 	pygame.draw.rect(surface, GREEN, fill)
 	pygame.draw.rect(surface, WHITE, border, 2)
 
@@ -41,7 +42,6 @@ class Player(pygame.sprite.Sprite):
 		self.speed_x = 0
 		self.shield = 100
 
-   
 	def update(self):
 		self.speed_x = 0
 		keystate = pygame.key.get_pressed()
@@ -54,14 +54,13 @@ class Player(pygame.sprite.Sprite):
 			self.rect.right = WIDTH
 		if self.rect.left < 0:
 			self.rect.left = 0
-    
+
 	def shoot(self):
 		bullet = Bullet(self.rect.centerx, self.rect.top)
 		all_sprites.add(bullet)
 		bullets.add(bullet)
 		laser_sound.play()
-	
-	     
+
 class Pokebol(pygame.sprite.Sprite):
 	def __init__(self):
 		super().__init__()
@@ -119,12 +118,11 @@ class Explosion(pygame.sprite.Sprite):
 				self.rect = self.image.get_rect()
 				self.rect.center = center
 
-    
+
 def show_go_screen():
-	screen.blit(over, [0,0])
-	draw_text(screen, "ATRAPALO YA", 65, WIDTH // 2, HEIGHT // 4)
-	draw_text(screen, " No debe morir pikachu", 27, WIDTH // 2, HEIGHT // 2)
-	draw_text(screen, "Press Key", 20, WIDTH // 2, HEIGHT * 3/4)
+	screen.blit(menu, [0,0])
+	draw_text(screen, " Pikachu debe sobrevivir ",40, 400, 30)
+	draw_text(screen, "Press Key", 30, 435, 450)
 	pygame.display.flip()
 	waiting = True
 	while waiting:
@@ -133,11 +131,31 @@ def show_go_screen():
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
-			
 			if event.type == pygame.KEYUP:
 				waiting = False
 
-  
+
+
+def pausa():
+    pausado=True
+    pygame.mixer.music.pause()
+    while pausado:
+        for event in pygame.event.get():
+            if event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_c:
+                    pygame.mixer.music.unpause()
+                    pausado=False
+                    
+                #if event.key==pygame.K_r:
+                    #show_go_screen()
+        screen.fill(BLACK)
+        draw_text(screen,"PAUSED",100,400,30)
+        draw_text(screen,"PRESS c TO CONTINUE",50,500,300)
+        pygame.display.flip()
+        clock.tick(60)
+
+     
+
 pokebol_images = []
 pokebol_list = ["assets/great3.png", "assets/master2.png","assets/safari1.png","assets/poke1.png","assets/ultra2.png"]
 for img in pokebol_list:
@@ -147,7 +165,7 @@ for img in pokebol_list:
 ####----------------EXPLOSTION IMAGENES --------------
 explosion_anim = []
 for i in range(6):
-	file = "assets/explo0{}.png".format(i)
+	file = "assets/regularExplosion0{}.png".format(i)
 	img = pygame.image.load(file).convert()
 	img.set_colorkey(BLACK)
 	img_scale = pygame.transform.scale(img, (70,70))
@@ -155,9 +173,7 @@ for i in range(6):
 
 # Cargar imagen de fondo
 background = pygame.image.load("assets/back.jpg").convert()
-menu = pygame.image.load("assets/fondito.jpg").convert()
-over = pygame.image.load("assets/over.jpg").convert()
-
+menu = pygame.image.load("assets/menu2.jpg").convert()
 # Cargar sonidos
 laser_sound = pygame.mixer.Sound("assets/pika.ogg")
 explosion_sound = pygame.mixer.Sound("assets/explosion.wav")
@@ -192,7 +208,6 @@ while running:
 
 
 	clock.tick(60)
-
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -200,7 +215,9 @@ while running:
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_SPACE:
 				player.shoot()
-        
+			if event.key == pygame.K_p:	
+				pausa()
+            
 
 	all_sprites.update()
 
@@ -224,6 +241,7 @@ while running:
 		pokebol_list.add(pokebol)
 		if player.shield <= 0:
 			game_over = True
+			pygame.mixer.music.stop()
 
 	screen.blit(background, [0, 0])
 
