@@ -313,11 +313,11 @@ def Creditos():
         
             mensaje(" CREDITS ",negro,-200,tamaño="grande")
             mensaje(" Colaboracion de   ",blanco,-150,tamaño="mediano")
-            mensaje(" Erika Valdez",blanco,-100,tamaño="mediano")
+            mensaje(" Barbara Gomez",blanco,-100,tamaño="mediano")
             mensaje(" Daniel Visaggi",blanco,-50,tamaño="mediano")
             mensaje(" Daiana Gramajo",blanco,0,tamaño="mediano")
             mensaje(" Luis Rodriguez ",blanco,50,tamaño="mediano")
-            mensaje(" Barbara Gomez",blanco,100,tamaño="mediano")
+            mensaje(" Erika Valdez",blanco,100,tamaño="mediano")
             mensaje(" X PARA SALIR",negro,150,tamaño="pequeño")
             pygame.display.flip()  # Print the contents to the screen
             for action in pygame.event.get():
